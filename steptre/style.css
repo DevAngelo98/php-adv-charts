@@ -1,0 +1,10 @@
+.wrap{
+  margin: auto;
+  max-width: 700px;
+  margin-bottom: 100px;
+  text-align: center;
+}
+
+.wrap h1{
+  margin-bottom: 30px;
+}

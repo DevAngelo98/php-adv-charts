@@ -11,6 +11,7 @@ function getData(){
     success: function(data){
       fatturato(data);
       fatturatoByAgent(data);
+      efficienza(data);
     },
     error: function(err){
       console.log("error: ", err);
@@ -35,9 +36,6 @@ function colorBorder(){
 }
 
 function fatturato(graphs){
- 
-  console.log(graphs);
-  
   var ctx = document.getElementById('myChart').getContext('2d');
   new Chart(ctx, {
       type: graphs.fatturato.type,
@@ -64,9 +62,10 @@ function fatturato(graphs){
 }
 
 function fatturatoByAgent(graphsAgent){
+  console.log(graphsAgent);
+  
   var getLabels = Object.keys(graphsAgent.fatturato_by_agent.data);
   var getData = Object.values(graphsAgent.fatturato_by_agent.data);
-
   var ctx = document.getElementById('agent').getContext('2d');
   new Chart(ctx, {
       type: "pie",
@@ -79,4 +78,58 @@ function fatturatoByAgent(graphsAgent){
           }]
       },
   });
+}
+
+function efficienza(dataTeam){
+  // console.log(dataTeam.team_efficiency);
+  // var getLabels = dataTeam.team_efficiency.data;
+  // get(getLabels);
+  // var getData1 = Object.values(dataTeam.team_efficiency.data.Team1);
+  // var getData2 = Object.values(dataTeam.team_efficiency.data.Team2);
+  // var getData3 = Object.values(dataTeam.team_efficiency.data.Team3);
+  // console.log(getLabels);
+  
+  var ctx = document.getElementById('clevel').getContext('2d');
+  new Chart(ctx, {
+      type: dataTeam.team_efficiency.type,
+      data: {
+        labels: moment.months(),
+        datasets: getTeam(dataTeam.team_efficiency.data)
+      },
+      options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+  });
+}
+
+function getTeam(team){
+  var arrayTeam = [];
+  var nomeTeam = Object.keys(team);
+  var valoreTeam = Object.values(team);
+  
+  for(var i=0; i<nomeTeam.length;i++){
+    var teamTemp = {
+      "label": nomeTeam[i],
+      "data": valoreTeam[i],
+      "borderColor": getRandomColor()
+    };
+    arrayTeam.push(teamTemp);
+  }
+
+  return arrayTeam;
+}
+
+function getRandomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
 }
