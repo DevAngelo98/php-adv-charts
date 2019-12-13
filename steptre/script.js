@@ -13,7 +13,7 @@ function getData(level){
       level: level 
     },
     success: function(data){
-      printGraphs(data,level);
+      graphs(data,level);
     },
     error: function(err){
       console.log("error: ", err);
@@ -21,10 +21,15 @@ function getData(level){
   });
 }
 
-function printGraphs(data,level) {
+function graphs(data,level) {
   if(level=="guest"){
     fatturato(data);
+    $("#agent").parent().remove();
+    $("#clevel").parent().remove();
   } else if (level=="employee" || level=="clevel" ){
+    if(level=="employee"){
+      $("#clevel").parent().remove();
+    }
     fatturato(data);
     fatturatoByAgent(data);
     if(level=="clevel"){
@@ -33,65 +38,46 @@ function printGraphs(data,level) {
   }
 }
 
-function colorBack(){
-  var backgroundColor=[];
-  for(var i=0; i<12; i++){
-    backgroundColor.push('rgba(0, 128, 0, 0.7)');
-  }
-  return backgroundColor;
-}
-
-function colorBorder(){
-  var borderColor=[];
-  for(var i=0; i<12; i++){
-    borderColor.push('black');
-  }
-  return borderColor;
+function printGraphs(id, type, labels, label, data,background,border ){
+  var ctx = document.getElementById(id).getContext('2d');
+  new Chart(ctx, {
+      type: type,
+      data: {
+          labels: labels,
+          datasets: [{
+            label: label,
+            data: data,
+            backgroundColor: background,
+            borderColor: border,
+          }]
+      }
+  });
 }
 
 function fatturato(graphs){
-  console.log(graphs);
-  
-  var ctx = document.getElementById('myChart').getContext('2d');
-  new Chart(ctx, {
-      type: graphs.fatturato.type,
-      data: {
-          labels: moment.months(),
-          datasets: [{
-            label: 'Vendite',
-            data: graphs.fatturato.data,
-            backgroundColor: colorBack(),
-            borderColor: colorBorder(),
-            borderWidth: 1
-          }]
-      },
-      options: {
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true
-                }
-            }]
-        }
-    }
-  });
+  printGraphs(
+    'myChart',
+    graphs.fatturato.type,
+    moment.months(),
+    'Vendite',
+    graphs.fatturato.data,
+    colorBack(),
+    colorBorder(),
+  )
 }
 
 function fatturatoByAgent(graphsAgent){
   var getLabels = Object.keys(graphsAgent.fatturato_by_agent.data);
   var getData = Object.values(graphsAgent.fatturato_by_agent.data);
-  var ctx = document.getElementById('agent').getContext('2d');
-  new Chart(ctx, {
-      type: "pie",
-      data: {
-          labels: getLabels,
-          datasets: [{
-              data: getData,
-              backgroundColor: "yellow",
-              borderColor: "red"
-          }]
-      },
-  });
+  printGraphs(
+    'agent', 
+    graphsAgent.fatturato_by_agent.type,
+    getLabels, 
+    "", 
+    getData,
+    "yellow",
+    "red"
+  )
 }
 
 function efficienza(dataTeam){
@@ -112,6 +98,22 @@ function efficienza(dataTeam){
         }
     }
   });
+}
+
+function colorBack(){
+  var backgroundColor=[];
+  for(var i=0; i<12; i++){
+    backgroundColor.push('rgba(0, 128, 0, 0.7)');
+  }
+  return backgroundColor;
+}
+
+function colorBorder(){
+  var borderColor=[];
+  for(var i=0; i<12; i++){
+    borderColor.push('black');
+  }
+  return borderColor;
 }
 
 function getTeam(team){
