@@ -1,5 +1,5 @@
 <?php 
 header('Content-Type: application/json');
-include "data.php";
+include "controllo.php";
 echo json_encode($graphs);
 ?>

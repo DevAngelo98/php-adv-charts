@@ -1,22 +1,36 @@
 $(document).ready(init);
 
 function init(){
-  getData();
+  var level = $(".container").attr("data-param");
+  getData(level);
 }
 
-function getData(){
+function getData(level){
   $.ajax({
     url: "getAllData.php",
     method: "GET",
+    data: {
+      level: level 
+    },
     success: function(data){
-      fatturato(data);
-      fatturatoByAgent(data);
-      efficienza(data);
+      printGraphs(data,level);
     },
     error: function(err){
       console.log("error: ", err);
     }
   });
+}
+
+function printGraphs(data,level) {
+  if(level=="guest"){
+    fatturato(data);
+  } else if (level=="employee" || level=="clevel" ){
+    fatturato(data);
+    fatturatoByAgent(data);
+    if(level=="clevel"){
+      efficienza(data);
+    } 
+  }
 }
 
 function colorBack(){
@@ -36,6 +50,8 @@ function colorBorder(){
 }
 
 function fatturato(graphs){
+  console.log(graphs);
+  
   var ctx = document.getElementById('myChart').getContext('2d');
   new Chart(ctx, {
       type: graphs.fatturato.type,
@@ -62,8 +78,6 @@ function fatturato(graphs){
 }
 
 function fatturatoByAgent(graphsAgent){
-  console.log(graphsAgent);
-  
   var getLabels = Object.keys(graphsAgent.fatturato_by_agent.data);
   var getData = Object.values(graphsAgent.fatturato_by_agent.data);
   var ctx = document.getElementById('agent').getContext('2d');
@@ -81,14 +95,6 @@ function fatturatoByAgent(graphsAgent){
 }
 
 function efficienza(dataTeam){
-  // console.log(dataTeam.team_efficiency);
-  // var getLabels = dataTeam.team_efficiency.data;
-  // get(getLabels);
-  // var getData1 = Object.values(dataTeam.team_efficiency.data.Team1);
-  // var getData2 = Object.values(dataTeam.team_efficiency.data.Team2);
-  // var getData3 = Object.values(dataTeam.team_efficiency.data.Team3);
-  // console.log(getLabels);
-  
   var ctx = document.getElementById('clevel').getContext('2d');
   new Chart(ctx, {
       type: dataTeam.team_efficiency.type,

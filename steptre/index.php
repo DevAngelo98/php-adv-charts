@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +18,7 @@
 </head>
 <body>
   
-  <div class="container">
+  <div class="container" data-param=<?=$_GET["level"]?>>
     <div class="wrap">
       <h1>Step 1</h1>
       <canvas id="myChart"></canvas> 
